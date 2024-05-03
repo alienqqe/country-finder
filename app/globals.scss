@@ -4,6 +4,18 @@ body {
 }
 
 .country {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+.overlay {
+  background-color: #000;
+  display: flex;
+  z-index: 3;
+}
+a {
+  list-style: none;
+  text-decoration: none;
 }

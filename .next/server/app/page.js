@@ -164,7 +164,7 @@ module.exports = require("url");
 
 /***/ }),
 
-/***/ 266:
+/***/ 492:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -198,7 +198,7 @@ const tree = {
         '',
         {
         children: ['__PAGE__', {}, {
-          page: [() => Promise.resolve(/* import() eager */).then(__webpack_require__.bind(__webpack_require__, 2838)), "C:\\Users\\Yevhenii\\Desktop\\country-finder\\app\\page.tsx"],
+          page: [() => Promise.resolve(/* import() eager */).then(__webpack_require__.bind(__webpack_require__, 2838)), "C:\\Users\\Yevhenii\\Desktop\\react projects\\country-finder\\app\\page.tsx"],
           metadata: {
     icon: [(async (props) => (await Promise.resolve(/* import() eager */).then(__webpack_require__.bind(__webpack_require__, 7481))).default(props))],
     apple: [],
@@ -209,7 +209,7 @@ const tree = {
         }]
       },
         {
-        'layout': [() => Promise.resolve(/* import() eager */).then(__webpack_require__.bind(__webpack_require__, 1921)), "C:\\Users\\Yevhenii\\Desktop\\country-finder\\app\\layout.tsx"],
+        'layout': [() => Promise.resolve(/* import() eager */).then(__webpack_require__.bind(__webpack_require__, 1921)), "C:\\Users\\Yevhenii\\Desktop\\react projects\\country-finder\\app\\layout.tsx"],
 'not-found': [() => Promise.resolve(/* import() eager */).then(__webpack_require__.t.bind(__webpack_require__, 5493, 23)), "next/dist/client/components/not-found-error"],
         metadata: {
     icon: [(async (props) => (await Promise.resolve(/* import() eager */).then(__webpack_require__.bind(__webpack_require__, 7481))).default(props))],
@@ -221,7 +221,7 @@ const tree = {
       }
       ]
       }.children;
-const pages = ["C:\\Users\\Yevhenii\\Desktop\\country-finder\\app\\page.tsx"];
+const pages = ["C:\\Users\\Yevhenii\\Desktop\\react projects\\country-finder\\app\\page.tsx"];
 
 // @ts-expect-error - replaced by webpack/turbopack loader
 
@@ -253,27 +253,27 @@ const routeModule = new AppPageRouteModule({
 
 /***/ }),
 
-/***/ 420:
+/***/ 1972:
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
 Promise.resolve(/* import() eager */).then(__webpack_require__.bind(__webpack_require__, 9618))
 
 /***/ }),
 
-/***/ 7402:
+/***/ 8029:
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
 Promise.resolve(/* import() eager */).then(__webpack_require__.bind(__webpack_require__, 3847))
 
 /***/ }),
 
-/***/ 8684:
+/***/ 163:
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
 Promise.resolve(/* import() eager */).then(__webpack_require__.t.bind(__webpack_require__, 1232, 23));
-Promise.resolve(/* import() eager */).then(__webpack_require__.t.bind(__webpack_require__, 2987, 23));
 Promise.resolve(/* import() eager */).then(__webpack_require__.t.bind(__webpack_require__, 831, 23));
 Promise.resolve(/* import() eager */).then(__webpack_require__.t.bind(__webpack_require__, 6926, 23));
+Promise.resolve(/* import() eager */).then(__webpack_require__.t.bind(__webpack_require__, 2987, 23));
 Promise.resolve(/* import() eager */).then(__webpack_require__.t.bind(__webpack_require__, 4282, 23));
 Promise.resolve(/* import() eager */).then(__webpack_require__.t.bind(__webpack_require__, 6505, 23))
 
@@ -388,11 +388,23 @@ const MainQuery = main.gql`
     }
   }
 `;
+const getAllCountries = main.gql`
+  query getAll {
+    countries {
+      name
+      code
+      emoji
+    }
+  }
+`;
 
 // EXTERNAL MODULE: ./redux/store.ts
 var store = __webpack_require__(6728);
 // EXTERNAL MODULE: ./node_modules/react-redux/lib/index.js
 var lib = __webpack_require__(8250);
+// EXTERNAL MODULE: ./node_modules/trie-search/index.js
+var trie_search = __webpack_require__(9648);
+var trie_search_default = /*#__PURE__*/__webpack_require__.n(trie_search);
 // EXTERNAL MODULE: ./redux/features/country-slice.ts
 var country_slice = __webpack_require__(5268);
 ;// CONCATENATED MODULE: ./app/components/MainComponent.tsx
@@ -404,9 +416,14 @@ var country_slice = __webpack_require__(5268);
 
 
 
+
 const MainComponent = ()=>{
+    const trie = new (trie_search_default())("name");
+    const [isHovered, setIsHovered] = (0,react_.useState)(false);
+    const [isFocused, setIsFocused] = (0,react_.useState)(false);
     const [inputValue, setInputValue] = (0,react_.useState)("");
     const [countryData, setCountryData] = (0,react_.useState)([]);
+    const [searchValues, setSearchValues] = (0,react_.useState)([]);
     const countryCode = (0,store/* useAppSelector */.C)((state)=>state.countryReducer.value.code);
     const gqlVariables = {
         variables: {
@@ -414,17 +431,26 @@ const MainComponent = ()=>{
         }
     };
     const { data, error } = (0,main.useQuery)(MainQuery, gqlVariables);
+    const countries = (0,main.useQuery)(getAllCountries);
     const dispatch = (0,lib.useDispatch)();
+    (0,react_.useEffect)(()=>{
+        if (countries?.data?.countries?.map((item)=>item)) {
+            trie.addAll(countries?.data?.countries?.map((item)=>item));
+            setSearchValues(trie.search(inputValue));
+        }
+    }, [
+        countries,
+        inputValue
+    ]);
     const handleSubmit = (e)=>{
         e.preventDefault();
-        dispatch((0,country_slice/* handleFormSubmit */.xz)(inputValue));
+        searchValues[0] && countries?.data?.countries.filter((item)=>item?.code === inputValue).length === 0 ? dispatch((0,country_slice/* handleFormSubmit */.xz)(searchValues[0].code)) : dispatch((0,country_slice/* handleFormSubmit */.xz)(inputValue));
     };
     (0,react_.useEffect)(()=>{
         if (data) {
             setCountryData([
                 data.country
             ]);
-            console.log(countryData);
         }
     }, [
         data
@@ -436,31 +462,60 @@ const MainComponent = ()=>{
             /*#__PURE__*/ jsx_runtime_.jsx("nav", {
                 className: "navbar",
                 children: /*#__PURE__*/ jsx_runtime_.jsx("div", {
-                    className: "container-fluid d-flex align-items-center justify-content-center",
-                    children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("form", {
-                        className: "d-flex",
+                    className: "container-fluid d-flex align-items-center justify-content-center position-relative",
+                    children: /*#__PURE__*/ jsx_runtime_.jsx("form", {
+                        className: "",
                         role: "search",
                         onSubmit: handleSubmit,
-                        children: [
-                            /*#__PURE__*/ jsx_runtime_.jsx("input", {
-                                className: "form-control me-2",
-                                type: "search",
-                                placeholder: "Enter country code",
-                                "aria-label": "Search",
-                                value: inputValue,
-                                onChange: (e)=>setInputValue(e.target.value)
-                            }),
-                            /*#__PURE__*/ jsx_runtime_.jsx("button", {
-                                className: "btn btn-outline-success",
-                                type: "submit",
-                                children: "Search"
-                            })
-                        ]
+                        children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+                            className: "d-flex ",
+                            children: [
+                                /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+                                    className: "d-flex flex-column align-items-center justify-content-center",
+                                    children: [
+                                        /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                            onFocus: ()=>setIsFocused(true),
+                                            onBlur: ()=>setIsFocused(false),
+                                            className: "form-control me-2",
+                                            type: "search",
+                                            placeholder: "Enter country name",
+                                            "aria-label": "Search",
+                                            value: inputValue,
+                                            onChange: (e)=>setInputValue(e.target.value)
+                                        }),
+                                        /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                            className: "overlay w-100 me-2 text-white flex-column ",
+                                            onMouseEnter: ()=>setIsHovered(true),
+                                            onMouseLeave: ()=>setIsHovered(false),
+                                            children: searchValues[0] && (isFocused || isHovered) ? searchValues.map((item)=>/*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                    className: " mt-1 d-inline",
+                                                    children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("a", {
+                                                        className: "ms-2 fs-5 text-white",
+                                                        onClick: ()=>setInputValue(item.code),
+                                                        children: [
+                                                            item.emoji,
+                                                            " ",
+                                                            item.code
+                                                        ]
+                                                    })
+                                                }, item.name)) : ""
+                                        })
+                                    ]
+                                }),
+                                /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                    children: /*#__PURE__*/ jsx_runtime_.jsx("button", {
+                                        className: "btn btn-outline-success",
+                                        type: "submit",
+                                        children: "Search"
+                                    })
+                                })
+                            ]
+                        })
                     })
                 })
             }),
             countryData[0] ? countryData?.map((item)=>/*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
-                    className: "country text-light",
+                    className: "country text-light position-absolute",
                     children: [
                         /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
                             className: "mt-5 me-5 d-flex align-items-center justify-content-center flex-column",
@@ -657,7 +712,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1363);
 
-const proxy = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`C:\Users\Yevhenii\Desktop\country-finder\app\layout.tsx`)
+const proxy = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`C:\Users\Yevhenii\Desktop\react projects\country-finder\app\layout.tsx`)
 
 // Accessing the __esModule property and exporting $$typeof are required here.
 // The __esModule getter forces the proxy target to create the default export
@@ -685,7 +740,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1363);
 
-const proxy = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`C:\Users\Yevhenii\Desktop\country-finder\app\page.tsx`)
+const proxy = (0,next_dist_build_webpack_loaders_next_flight_loader_module_proxy__WEBPACK_IMPORTED_MODULE_0__.createProxy)(String.raw`C:\Users\Yevhenii\Desktop\react projects\country-finder\app\page.tsx`)
 
 // Accessing the __esModule property and exporting $$typeof are required here.
 // The __esModule getter forces the proxy target to create the default export
@@ -737,7 +792,7 @@ __webpack_require__.r(__webpack_exports__);
 var __webpack_require__ = require("../webpack-runtime.js");
 __webpack_require__.C(exports);
 var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
-var __webpack_exports__ = __webpack_require__.X(0, [587,270], () => (__webpack_exec__(266)));
+var __webpack_exports__ = __webpack_require__.X(0, [587,829], () => (__webpack_exec__(492)));
 module.exports = __webpack_exports__;
 
 })();

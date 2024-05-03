@@ -1,4 +1,4 @@
-// File: C:\Users\Yevhenii\Desktop\country-finder\app\page.tsx
+// File: C:\Users\Yevhenii\Desktop\react projects\country-finder\app\page.tsx
 import * as entry from '../../../app/page.js'
 import type { ResolvingMetadata } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

@@ -19,3 +19,13 @@ export const MainQuery = gql`
     }
   }
 `
+
+export const getAllCountries = gql`
+  query getAll {
+    countries {
+      name
+      code
+      emoji
+    }
+  }
+`
