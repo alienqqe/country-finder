@@ -1,1 +1,1 @@
-self.__PRERENDER_MANIFEST="{\"preview\":{\"previewModeId\":\"da5f7cf3fe0ab3fe4eaf7b099bdb7639\",\"previewModeSigningKey\":\"d8e981db38f61c72b76b14e262947d2e48903b58e83e7f8b85a6e006de0579f1\",\"previewModeEncryptionKey\":\"735d35350028ba0e01e49cd0f7e9f58fbf61d7b7d200c1f5d08213c54bac8fdf\"}}"
+self.__PRERENDER_MANIFEST="{\"preview\":{\"previewModeId\":\"process.env.__NEXT_PREVIEW_MODE_ID\",\"previewModeSigningKey\":\"process.env.__NEXT_PREVIEW_MODE_SIGNING_KEY\",\"previewModeEncryptionKey\":\"process.env.__NEXT_PREVIEW_MODE_ENCRYPTION_KEY\"}}"
