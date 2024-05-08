@@ -267,15 +267,15 @@ Promise.resolve(/* import() eager */).then(__webpack_require__.bind(__webpack_re
 
 /***/ }),
 
-/***/ 163:
+/***/ 8488:
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
-Promise.resolve(/* import() eager */).then(__webpack_require__.t.bind(__webpack_require__, 1232, 23));
+Promise.resolve(/* import() eager */).then(__webpack_require__.t.bind(__webpack_require__, 2987, 23));
 Promise.resolve(/* import() eager */).then(__webpack_require__.t.bind(__webpack_require__, 831, 23));
 Promise.resolve(/* import() eager */).then(__webpack_require__.t.bind(__webpack_require__, 6926, 23));
-Promise.resolve(/* import() eager */).then(__webpack_require__.t.bind(__webpack_require__, 2987, 23));
 Promise.resolve(/* import() eager */).then(__webpack_require__.t.bind(__webpack_require__, 4282, 23));
-Promise.resolve(/* import() eager */).then(__webpack_require__.t.bind(__webpack_require__, 6505, 23))
+Promise.resolve(/* import() eager */).then(__webpack_require__.t.bind(__webpack_require__, 6505, 23));
+Promise.resolve(/* import() eager */).then(__webpack_require__.t.bind(__webpack_require__, 1232, 23))
 
 /***/ }),
 
@@ -365,6 +365,8 @@ var jsx_runtime_ = __webpack_require__(6786);
 var main = __webpack_require__(5325);
 // EXTERNAL MODULE: ./node_modules/@apollo/client/link/error/error.cjs
 var error = __webpack_require__(4073);
+// EXTERNAL MODULE: ./node_modules/react-icons/fa/index.mjs + 4 modules
+var fa = __webpack_require__(858);
 // EXTERNAL MODULE: external "next/dist/compiled/react"
 var react_ = __webpack_require__(8038);
 ;// CONCATENATED MODULE: ./app/GraphQL/Queries.tsx
@@ -417,13 +419,25 @@ var country_slice = __webpack_require__(5268);
 
 
 
+
 const MainComponent = ()=>{
     const trie = new (trie_search_default())("name");
+    const [historyArr, setHistoryArr] = (0,react_.useState)(localStorage.getItem("history") ? localStorage.getItem("history").split(" ") : []);
+    const [screenWidth, setWidth] = (0,react_.useState)(window.innerWidth);
     const [isHovered, setIsHovered] = (0,react_.useState)(false);
     const [isFocused, setIsFocused] = (0,react_.useState)(false);
     const [inputValue, setInputValue] = (0,react_.useState)("");
     const [countryData, setCountryData] = (0,react_.useState)([]);
     const [searchValues, setSearchValues] = (0,react_.useState)([]);
+    // Get viewport width
+    const updateWidth = ()=>{
+        setWidth(window.innerWidth);
+    };
+    (0,react_.useEffect)(()=>{
+        window.addEventListener("resize", updateWidth);
+        return ()=>window.removeEventListener("resize", updateWidth);
+    }, []);
+    // /Get viewport width
     const countryCode = (0,store/* useAppSelector */.C)((state)=>state.countryReducer.value.code);
     const gqlVariables = {
         variables: {
@@ -444,8 +458,21 @@ const MainComponent = ()=>{
     ]);
     const handleSubmit = (e)=>{
         e.preventDefault();
-        searchValues[0] && countries?.data?.countries.filter((item)=>item?.code === inputValue).length === 0 ? dispatch((0,country_slice/* handleFormSubmit */.xz)(searchValues[0].code)) : dispatch((0,country_slice/* handleFormSubmit */.xz)(inputValue));
+        searchValues[0] && countries?.data?.countries.filter((item)=>item?.code === inputValue).length === 0 ? dispatch((0,country_slice/* handleFormSubmit */.xz)(searchValues[0].code)) : dispatch((0,country_slice/* handleFormSubmit */.xz)(inputValue)) ? localStorage.getItem("history") : "";
+        setHistoryArr([
+            ...historyArr,
+            inputValue
+        ]);
+        localStorage.setItem("history", historyArr.join(" "));
     };
+    const onDelete = (index)=>{
+        setHistoryArr(historyArr.filter((item, id)=>id !== index));
+    };
+    (0,react_.useEffect)(()=>{
+        localStorage.setItem("history", historyArr.join(" "));
+    }, [
+        historyArr
+    ]);
     (0,react_.useEffect)(()=>{
         if (data) {
             setCountryData([
@@ -463,54 +490,89 @@ const MainComponent = ()=>{
                 className: "navbar",
                 children: /*#__PURE__*/ jsx_runtime_.jsx("div", {
                     className: "container-fluid d-flex align-items-center justify-content-center position-relative",
-                    children: /*#__PURE__*/ jsx_runtime_.jsx("form", {
-                        className: "",
-                        role: "search",
-                        onSubmit: handleSubmit,
-                        children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
-                            className: "d-flex ",
-                            children: [
-                                /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
-                                    className: "d-flex flex-column align-items-center justify-content-center",
-                                    children: [
-                                        /*#__PURE__*/ jsx_runtime_.jsx("input", {
-                                            onFocus: ()=>setIsFocused(true),
-                                            onBlur: ()=>setIsFocused(false),
-                                            className: "form-control me-2",
-                                            type: "search",
-                                            placeholder: "Enter country name",
-                                            "aria-label": "Search",
-                                            value: inputValue,
-                                            onChange: (e)=>setInputValue(e.target.value)
-                                        }),
-                                        /*#__PURE__*/ jsx_runtime_.jsx("div", {
-                                            className: "overlay w-100 me-2 text-white flex-column ",
-                                            onMouseEnter: ()=>setIsHovered(true),
-                                            onMouseLeave: ()=>setIsHovered(false),
-                                            children: searchValues[0] && (isFocused || isHovered) ? searchValues.map((item)=>/*#__PURE__*/ jsx_runtime_.jsx("div", {
-                                                    className: " mt-1 d-inline",
-                                                    children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("a", {
-                                                        className: "ms-2 fs-5 text-white",
-                                                        onClick: ()=>setInputValue(item.code),
+                    children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+                        className: "d-flex ",
+                        children: [
+                            /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+                                className: "d-flex flex-column align-items-center justify-content-center",
+                                children: [
+                                    /*#__PURE__*/ (0,jsx_runtime_.jsxs)("div", {
+                                        className: "input-group  flex-row dropdown",
+                                        children: [
+                                            /*#__PURE__*/ jsx_runtime_.jsx("button", {
+                                                className: screenWidth <= 576 ? "btn btn-secondary btn-sm dropdown-toggle input-group-text" : "btn btn-secondary btn dropdown-toggle input-group-text",
+                                                id: "basic-addon1",
+                                                role: "button",
+                                                "data-bs-toggle": "dropdown",
+                                                "aria-expanded": "false",
+                                                children: /*#__PURE__*/ jsx_runtime_.jsx(fa/* FaHistory */.ceS, {})
+                                            }),
+                                            /*#__PURE__*/ jsx_runtime_.jsx("ul", {
+                                                className: historyArr[0] ? "dropdown-menu" : "d-none",
+                                                children: historyArr[0] ? historyArr.map((item, index)=>/*#__PURE__*/ (0,jsx_runtime_.jsxs)("li", {
+                                                        className: "d-flex align-items-center justify-content-between",
                                                         children: [
-                                                            item.emoji,
-                                                            " ",
-                                                            item.code
+                                                            /*#__PURE__*/ jsx_runtime_.jsx("a", {
+                                                                className: "dropdown-item",
+                                                                onClick: ()=>setInputValue(item),
+                                                                href: "#",
+                                                                children: item
+                                                            }),
+                                                            /*#__PURE__*/ jsx_runtime_.jsx("a", {
+                                                                onClick: ()=>onDelete(index),
+                                                                children: /*#__PURE__*/ jsx_runtime_.jsx(fa/* FaTimes */.aHS, {})
+                                                            })
                                                         ]
-                                                    })
-                                                }, item.name)) : ""
-                                        })
-                                    ]
-                                }),
-                                /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                    }, index)) : ""
+                                            }),
+                                            /*#__PURE__*/ jsx_runtime_.jsx("form", {
+                                                onSubmit: handleSubmit,
+                                                role: "search",
+                                                children: /*#__PURE__*/ jsx_runtime_.jsx("input", {
+                                                    onFocus: ()=>setIsFocused(true),
+                                                    onBlur: ()=>setIsFocused(false),
+                                                    className: "search-input form-control me-2",
+                                                    type: "search",
+                                                    placeholder: "Enter country name",
+                                                    "aria-label": "Search",
+                                                    value: inputValue,
+                                                    onChange: (e)=>setInputValue(e.target.value)
+                                                })
+                                            })
+                                        ]
+                                    }),
+                                    /*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                        className: "overlay w-100 me-2 text-white flex-column ",
+                                        onMouseEnter: ()=>setIsHovered(true),
+                                        onMouseLeave: ()=>setIsHovered(false),
+                                        children: searchValues[0] && (isFocused || isHovered) ? searchValues.map((item)=>/*#__PURE__*/ jsx_runtime_.jsx("div", {
+                                                className: " mt-1 d-inline",
+                                                children: /*#__PURE__*/ (0,jsx_runtime_.jsxs)("a", {
+                                                    className: "ms-2 fs-5 text-white",
+                                                    onClick: ()=>setInputValue(item.code),
+                                                    children: [
+                                                        item.emoji,
+                                                        " ",
+                                                        item.code
+                                                    ]
+                                                })
+                                            }, item.name)) : ""
+                                    })
+                                ]
+                            }),
+                            /*#__PURE__*/ jsx_runtime_.jsx("form", {
+                                onSubmit: handleSubmit,
+                                role: "search",
+                                children: /*#__PURE__*/ jsx_runtime_.jsx("div", {
                                     children: /*#__PURE__*/ jsx_runtime_.jsx("button", {
                                         className: "btn btn-outline-success",
+                                        onSubmit: handleSubmit,
                                         type: "submit",
                                         children: "Search"
                                     })
                                 })
-                            ]
-                        })
+                            })
+                        ]
                     })
                 })
             }),
@@ -792,7 +854,7 @@ __webpack_require__.r(__webpack_exports__);
 var __webpack_require__ = require("../webpack-runtime.js");
 __webpack_require__.C(exports);
 var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
-var __webpack_exports__ = __webpack_require__.X(0, [587,829], () => (__webpack_exec__(492)));
+var __webpack_exports__ = __webpack_require__.X(0, [587,411], () => (__webpack_exec__(492)));
 module.exports = __webpack_exports__;
 
 })();

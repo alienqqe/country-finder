@@ -1,4 +1,6 @@
 'use client'
+import { FaHistory, FaTimes } from 'react-icons/fa'
+
 import React, { useLayoutEffect } from 'react'
 import { useState, useEffect } from 'react'
 import { useQuery, gql } from '@apollo/client'
@@ -8,21 +10,38 @@ import { useDispatch } from 'react-redux'
 import TrieSearch from 'trie-search'
 import { handleFormSubmit } from '@/redux/features/country-slice'
 
-
 const MainComponent = () => {
   interface countryObject {
-    __typename: string;
-    name: string;
-    code: string;
-    emoji: string;
+    __typename: string
+    name: string
+    code: string
+    emoji: string
   }
   const trie = new TrieSearch('name')
 
+  const [historyArr, setHistoryArr] = useState(
+    localStorage.getItem('history')
+      ? localStorage.getItem('history')!.split(' ')
+      : []
+  )
+  const [screenWidth, setWidth] = useState(window.innerWidth)
   const [isHovered, setIsHovered] = useState(false)
   const [isFocused, setIsFocused] = useState(false)
   const [inputValue, setInputValue] = useState('')
   const [countryData, setCountryData] = useState<any[]>([])
   const [searchValues, setSearchValues] = useState<any[]>([])
+
+  // Get viewport width
+  const updateWidth = () => {
+    setWidth(window.innerWidth)
+  }
+
+  useEffect(() => {
+    window.addEventListener('resize', updateWidth)
+    return () => window.removeEventListener('resize', updateWidth)
+  }, [])
+
+  // /Get viewport width
 
   const countryCode = useAppSelector((state) => state.countryReducer.value.code)
 
@@ -32,23 +51,40 @@ const MainComponent = () => {
     },
   }
 
-  
-
   const { data, error } = useQuery(MainQuery, gqlVariables)
   const countries = useQuery(getAllCountries)
-   const dispatch = useDispatch<AppDispatch>()
-    useEffect(() => {
+  const dispatch = useDispatch<AppDispatch>()
+  useEffect(() => {
     if (countries?.data?.countries?.map((item: countryObject) => item)) {
-      trie.addAll(countries?.data?.countries?.map((item: countryObject) => item))
+      trie.addAll(
+        countries?.data?.countries?.map((item: countryObject) => item)
+      )
       setSearchValues(trie.search(inputValue))
-      }
+    }
   }, [countries, inputValue])
 
-  
   const handleSubmit = (e: any) => {
     e.preventDefault()
-       searchValues[0] && countries?.data?.countries.filter((item: countryObject) => item?.code === inputValue).length === 0 ? dispatch(handleFormSubmit(searchValues[0].code))  : dispatch(handleFormSubmit(inputValue))
+    searchValues[0] &&
+    countries?.data?.countries.filter(
+      (item: countryObject) => item?.code === inputValue
+    ).length === 0
+      ? dispatch(handleFormSubmit(searchValues[0].code))
+      : dispatch(handleFormSubmit(inputValue))
+      ? localStorage.getItem('history')
+      : ''
+
+    setHistoryArr([...historyArr, inputValue])
+    localStorage.setItem('history', historyArr.join(' '))
   }
+
+  const onDelete = (index: any) => {
+    setHistoryArr(historyArr.filter((item, id) => id !== index))
+  }
+
+  useEffect(() => {
+    localStorage.setItem('history', historyArr.join(' '))
+  }, [historyArr])
 
   useEffect(() => {
     if (data) {
@@ -63,45 +99,89 @@ const MainComponent = () => {
     <>
       <nav className='navbar'>
         <div className='container-fluid d-flex align-items-center justify-content-center position-relative'>
-          <form className='' role='search' onSubmit={handleSubmit}>
-            <div className='d-flex '>
-              <div className='d-flex flex-column align-items-center justify-content-center'>
-                <input
-                  onFocus={() => setIsFocused(true)}
-                  onBlur={() => setIsFocused(false)}
-                  className='form-control me-2'
-                  type='search'
-                  placeholder='Enter country name'
-                  aria-label='Search'
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                />
-                <div
-                  className='overlay w-100 me-2 text-white flex-column '
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}
+          <div className='d-flex '>
+            <div className='d-flex flex-column align-items-center justify-content-center'>
+              <div className='input-group  flex-row dropdown'>
+                <button
+                  className={
+                    screenWidth <= 576
+                      ? 'btn btn-secondary btn-sm dropdown-toggle input-group-text'
+                      : 'btn btn-secondary btn dropdown-toggle input-group-text'
+                  }
+                  id='basic-addon1'
+                  role='button'
+                  data-bs-toggle='dropdown'
+                  aria-expanded='false'
                 >
-                  {searchValues[0] && (isFocused || isHovered)
-                    ? searchValues.map((item: countryObject) => (
-                        <div key={item.name} className=' mt-1 d-inline'>
+                  <FaHistory />
+                </button>
+
+                <ul className={historyArr[0] ? 'dropdown-menu' : 'd-none'}>
+                  {historyArr[0]
+                    ? historyArr.map((item, index) => (
+                        <li
+                          key={index}
+                          className='d-flex align-items-center justify-content-between'
+                        >
                           <a
-                            className='ms-2 fs-5 text-white'
-                            onClick={() => setInputValue(item.code)}
+                            className='dropdown-item'
+                            onClick={() => setInputValue(item)}
+                            href='#'
                           >
-                            {item.emoji} {item.code}
+                            {item}
                           </a>
-                        </div>
+                          <a onClick={() => onDelete(index)}>
+                            <FaTimes />
+                          </a>
+                        </li>
                       ))
                     : ''}
-                </div>
+                </ul>
+                <form onSubmit={handleSubmit} role='search'>
+                  <input
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                    className='search-input form-control me-2'
+                    type='search'
+                    placeholder='Enter country name'
+                    aria-label='Search'
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                  />
+                </form>
               </div>
+
+              <div
+                className='overlay w-100 me-2 text-white flex-column '
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+              >
+                {searchValues[0] && (isFocused || isHovered)
+                  ? searchValues.map((item: countryObject) => (
+                      <div key={item.name} className=' mt-1 d-inline'>
+                        <a
+                          className='ms-2 fs-5 text-white'
+                          onClick={() => setInputValue(item.code)}
+                        >
+                          {item.emoji} {item.code}
+                        </a>
+                      </div>
+                    ))
+                  : ''}
+              </div>
+            </div>
+            <form onSubmit={handleSubmit} role='search'>
               <div>
-                <button className='btn btn-outline-success' type='submit'>
+                <button
+                  className='btn btn-outline-success'
+                  onSubmit={handleSubmit}
+                  type='submit'
+                >
                   Search
                 </button>
               </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </nav>
 

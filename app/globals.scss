@@ -19,3 +19,8 @@ a {
   list-style: none;
   text-decoration: none;
 }
+@media screen and (max-width: 403px) {
+  .search-input {
+    max-width: 150px;
+  }
+}
