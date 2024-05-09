@@ -31,12 +31,12 @@ export default function RootLayout({
   }, [])
 
   return (
-    <SafeHydrate>
-      <html lang='en'>
-        <body className={inter.className}>
+    <html lang='en'>
+      <body className={inter.className}>
+        <SafeHydrate>
           <ReduxProvider>{children}</ReduxProvider>
-        </body>
-      </html>
-    </SafeHydrate>
+        </SafeHydrate>
+      </body>
+    </html>
   )
 }
