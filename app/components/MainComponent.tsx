@@ -20,11 +20,13 @@ const MainComponent = () => {
   const trie = new TrieSearch('name')
 
   const [historyArr, setHistoryArr] = useState(
-    localStorage.getItem('history')
+    localStorage.getItem('history') && typeof window !== undefined
       ? localStorage.getItem('history')!.split(' ')
       : []
   )
-  const [screenWidth, setWidth] = useState(window.innerWidth)
+  const [screenWidth, setWidth] = useState(
+    typeof window !== undefined ? window.innerWidth : 0
+  )
   const [isHovered, setIsHovered] = useState(false)
   const [isFocused, setIsFocused] = useState(false)
   const [inputValue, setInputValue] = useState('')
@@ -70,12 +72,14 @@ const MainComponent = () => {
       (item: countryObject) => item?.code === inputValue
     ).length === 0
       ? dispatch(handleFormSubmit(searchValues[0].code))
-      : dispatch(handleFormSubmit(inputValue))
+      : dispatch(handleFormSubmit(inputValue)) && typeof window !== undefined
       ? localStorage.getItem('history')
       : ''
 
     setHistoryArr([...historyArr, inputValue])
-    localStorage.setItem('history', historyArr.join(' '))
+    if (typeof window !== undefined) {
+      localStorage.setItem('history', historyArr.join(' '))
+    }
   }
 
   const onDelete = (index: any) => {
@@ -83,7 +87,9 @@ const MainComponent = () => {
   }
 
   useEffect(() => {
-    localStorage.setItem('history', historyArr.join(' '))
+    if (typeof window !== undefined) {
+      localStorage.setItem('history', historyArr.join(' '))
+    }
   }, [historyArr])
 
   useEffect(() => {
